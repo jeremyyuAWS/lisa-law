@@ -305,7 +305,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
           )}
           
           {currentTab === 'analytics' && (
-            <div className="space-y-6">
+            <div className="space-y-6 pb-6">
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-3">Analytics & Performance Metrics</h3>
                 <p className="text-gray-600 mb-4">
@@ -495,7 +495,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
           )}
           
           {currentTab === 'comparison' && (
-            <div className="space-y-6">
+            <div className="space-y-6 pb-6">
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-3">Voice Provider Comparison</h3>
                 <p className="text-gray-600 mb-4">
