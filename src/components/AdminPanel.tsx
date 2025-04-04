@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { X, Save, Settings, Mic, User, Info, HelpCircle, MessageSquare, AlertTriangle } from 'lucide-react';
+import { X, Save, Settings, Mic, User, Info, HelpCircle, MessageSquare, AlertTriangle, BarChart, PieChart } from 'lucide-react';
+import { Bar, Pie, Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Title, Tooltip, Legend);
 import { useAppStore } from '../store';
 import { AgentPersonality, VoiceType } from '../types';
 import { Button } from './ui/Button';
@@ -54,7 +58,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     setAgentInstructions
   } = useAppStore();
   
-  const [currentTab, setCurrentTab] = useState<'personality' | 'voice' | 'features' | 'instructions'>('personality');
+  const [currentTab, setCurrentTab] = useState<'personality' | 'voice' | 'features' | 'instructions' | 'analytics' | 'comparison'>('personality');
   const [localAgentInstructions, setLocalAgentInstructions] = useState(agentInstructions);
   
   const handlePersonalityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +97,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           </button>
         </div>
         
-        <div className="flex border-b border-gray-200">
+        <div className="flex border-b border-gray-200 overflow-x-auto">
           <button
             className={`px-4 py-2 font-medium text-sm ${currentTab === 'personality' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-gray-900'}`}
             onClick={() => setCurrentTab('personality')}
@@ -128,6 +132,24 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             <div className="flex items-center">
               <Info className="h-4 w-4 mr-1" />
               Instructions
+            </div>
+          </button>
+          <button
+            className={`px-4 py-2 font-medium text-sm ${currentTab === 'analytics' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-gray-900'}`}
+            onClick={() => setCurrentTab('analytics')}
+          >
+            <div className="flex items-center">
+              <BarChart className="h-4 w-4 mr-1" />
+              Analytics
+            </div>
+          </button>
+          <button
+            className={`px-4 py-2 font-medium text-sm ${currentTab === 'comparison' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-gray-900'}`}
+            onClick={() => setCurrentTab('comparison')}
+          >
+            <div className="flex items-center">
+              <PieChart className="h-4 w-4 mr-1" />
+              Provider Comparison
             </div>
           </button>
         </div>
@@ -321,6 +343,417 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                     <h4 className="text-sm font-medium text-blue-700">Instruction Guidelines</h4>
                     <p className="text-xs text-blue-600 mt-1">
                       Instructions should include the agent's role, primary goals, response style, and priority focus areas. Avoid technical jargon and keep instructions clear and concise.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {currentTab === 'analytics' && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-base font-medium text-gray-900">Performance Analytics</h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  Key metrics and performance indicators for the Lisa Law assistant.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Completion Rate</h4>
+                  <div className="flex items-end space-x-2">
+                    <div className="text-2xl font-bold text-indigo-600">78%</div>
+                    <div className="text-xs text-green-600 flex items-center pb-1">
+                      <span className="mr-1">↑</span>
+                      <span>12%</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Users who complete the full intake process</p>
+                </div>
+                
+                <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Avg. Completion Time</h4>
+                  <div className="flex items-end space-x-2">
+                    <div className="text-2xl font-bold text-indigo-600">4:32</div>
+                    <div className="text-xs text-green-600 flex items-center pb-1">
+                      <span className="mr-1">↓</span>
+                      <span>0:45</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Average time to complete intake (min:sec)</p>
+                </div>
+                
+                <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Qualification Rate</h4>
+                  <div className="flex items-end space-x-2">
+                    <div className="text-2xl font-bold text-indigo-600">64%</div>
+                    <div className="text-xs text-green-600 flex items-center pb-1">
+                      <span className="mr-1">↑</span>
+                      <span>8%</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Leads that qualify for legal services</p>
+                </div>
+              </div>
+              
+              <div className="border-t border-gray-200 pt-6">
+                <h3 className="text-base font-medium text-gray-900 mb-4">User Engagement</h3>
+                <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm mb-6">
+                  {(() => {
+                    const engagementData = {
+                      labels: ['Initial Questions', 'Discovery', 'Documentation', 'Qualification', 'Next Steps'],
+                      datasets: [
+                        {
+                          label: 'Completion %',
+                          data: [98, 87, 76, 68, 62],
+                          backgroundColor: 'rgba(79, 70, 229, 0.6)',
+                          borderColor: 'rgba(79, 70, 229, 1)',
+                          borderWidth: 1,
+                        },
+                      ],
+                    };
+                    
+                    const barOptions = {
+                      responsive: true,
+                      plugins: {
+                        legend: {
+                          position: 'top' as const,
+                        },
+                        title: {
+                          display: false,
+                        },
+                      },
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                          max: 100,
+                          ticks: {
+                            callback: function(value: any) {
+                              return value + '%';
+                            },
+                          },
+                        },
+                      },
+                    };
+                    
+                    return <Bar data={engagementData} options={barOptions} height={80} />;
+                  })()}
+                  <p className="text-xs text-gray-500 mt-3 text-center">
+                    Funnel completion rates by stage of the intake process
+                  </p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-base font-medium text-gray-900 mb-4">Conversion by Case Type</h3>
+                  <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                    {(() => {
+                      const conversionData = {
+                        labels: ['Immigration', 'Family', 'Employment', 'Criminal', 'Other'],
+                        datasets: [
+                          {
+                            label: 'Conversion Rate',
+                            data: [42, 28, 36, 19, 22],
+                            backgroundColor: [
+                              'rgba(79, 70, 229, 0.6)',
+                              'rgba(59, 130, 246, 0.6)',
+                              'rgba(16, 185, 129, 0.6)',
+                              'rgba(245, 158, 11, 0.6)',
+                              'rgba(107, 114, 128, 0.6)',
+                            ],
+                            borderColor: [
+                              'rgba(79, 70, 229, 1)',
+                              'rgba(59, 130, 246, 1)',
+                              'rgba(16, 185, 129, 1)',
+                              'rgba(245, 158, 11, 1)',
+                              'rgba(107, 114, 128, 1)',
+                            ],
+                            borderWidth: 1,
+                          },
+                        ],
+                      };
+                      
+                      return <Pie data={conversionData} height={100} />;
+                    })()}
+                    <p className="text-xs text-gray-500 mt-3 text-center">
+                      Percentage of qualified leads by legal case category
+                    </p>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-base font-medium text-gray-900 mb-4">Weekly Trend</h3>
+                  <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                    {(() => {
+                      const trendData = {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                        datasets: [
+                          {
+                            label: 'Completion Rate',
+                            data: [65, 68, 72, 78],
+                            borderColor: 'rgba(79, 70, 229, 1)',
+                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                            tension: 0.3,
+                            fill: true,
+                          },
+                          {
+                            label: 'Qualification Rate',
+                            data: [48, 52, 58, 64],
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.3,
+                            fill: true,
+                          },
+                        ],
+                      };
+                      
+                      const lineOptions = {
+                        responsive: true,
+                        plugins: {
+                          legend: {
+                            position: 'top' as const,
+                          },
+                        },
+                        scales: {
+                          y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                              callback: function(value: any) {
+                                return value + '%';
+                              },
+                            },
+                          },
+                        },
+                      };
+                      
+                      return <Line data={trendData} options={lineOptions} height={100} />;
+                    })()}
+                    <p className="text-xs text-gray-500 mt-3 text-center">
+                      Weekly performance trends over the last month
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {currentTab === 'comparison' && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-base font-medium text-gray-900">Provider Comparison</h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  Performance metrics comparing different AI providers and configurations.
+                </p>
+              </div>
+              
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Provider
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Accuracy
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Latency
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Cost
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        User Rating
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="text-sm font-medium text-gray-900">OpenAI GPT-4</div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">94%</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">1.2s</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">$$$</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">4.8/5</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="text-sm font-medium text-gray-900">Anthropic Claude</div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">92%</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">1.4s</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">$$</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">4.6/5</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="text-sm font-medium text-gray-900">Google Gemini</div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">90%</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">1.5s</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">$$</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">4.5/5</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="text-sm font-medium text-gray-900">Mistral AI</div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">88%</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">1.0s</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">$</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">4.3/5</div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div>
+                  <h3 className="text-base font-medium text-gray-900 mb-4">Accuracy by Legal Domain</h3>
+                  <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                    {(() => {
+                      const domainData = {
+                        labels: ['Immigration', 'Family', 'Employment', 'Criminal', 'Other'],
+                        datasets: [
+                          {
+                            label: 'OpenAI',
+                            data: [96, 94, 92, 93, 91],
+                            backgroundColor: 'rgba(79, 70, 229, 0.6)',
+                            borderColor: 'rgba(79, 70, 229, 1)',
+                            borderWidth: 1,
+                          },
+                          {
+                            label: 'Anthropic',
+                            data: [94, 93, 90, 91, 89],
+                            backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1,
+                          },
+                          {
+                            label: 'Google',
+                            data: [92, 91, 89, 88, 87],
+                            backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 1,
+                          },
+                        ],
+                      };
+                      
+                      const barOptions = {
+                        responsive: true,
+                        plugins: {
+                          legend: {
+                            position: 'top' as const,
+                          },
+                        },
+                        scales: {
+                          y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                              callback: function(value: any) {
+                                return value + '%';
+                              },
+                            },
+                          },
+                        },
+                      };
+                      
+                      return <Bar data={domainData} options={barOptions} height={100} />;
+                    })()}
+                    <p className="text-xs text-gray-500 mt-3 text-center">
+                      Accuracy comparison across different legal domains
+                    </p>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-base font-medium text-gray-900 mb-4">Cost-Effectiveness Ratio</h3>
+                  <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                    {(() => {
+                      const costData = {
+                        labels: ['OpenAI', 'Anthropic', 'Google', 'Mistral'],
+                        datasets: [
+                          {
+                            label: 'Cost-Effectiveness',
+                            data: [78, 85, 82, 92],
+                            backgroundColor: [
+                              'rgba(79, 70, 229, 0.6)',
+                              'rgba(59, 130, 246, 0.6)',
+                              'rgba(16, 185, 129, 0.6)',
+                              'rgba(245, 158, 11, 0.6)',
+                            ],
+                            borderColor: [
+                              'rgba(79, 70, 229, 1)',
+                              'rgba(59, 130, 246, 1)',
+                              'rgba(16, 185, 129, 1)',
+                              'rgba(245, 158, 11, 1)',
+                            ],
+                            borderWidth: 1,
+                          },
+                        ],
+                      };
+                      
+                      return <Pie data={costData} height={100} />;
+                    })()}
+                    <p className="text-xs text-gray-500 mt-3 text-center">
+                      Ratio of performance to cost (higher is better)
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mt-6">
+                <div className="flex items-start">
+                  <Info className="h-5 w-5 text-blue-600 mr-2 mt-0.5" />
+                  <div>
+                    <h4 className="text-sm font-medium text-blue-700">Provider Selection Insights</h4>
+                    <p className="text-xs text-blue-600 mt-1">
+                      Our testing shows that OpenAI GPT-4 provides the highest accuracy for legal intake, particularly for complex immigration cases. However, Mistral AI offers the best cost-effectiveness ratio for high-volume, straightforward cases. Consider a hybrid approach using OpenAI for complex cases and Mistral for simpler inquiries.
                     </p>
                   </div>
                 </div>
