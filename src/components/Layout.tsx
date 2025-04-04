@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Scale, Globe, Settings, HelpCircle } from 'lucide-react';
 import { useAppStore } from '../store';
-import { AdminPanel } from './AdminPanel';
+import { AdminPage } from '../pages/AdminPage';
 import { WelcomeModal } from './WelcomeModal';
 
 interface LayoutProps {
@@ -9,16 +9,9 @@ interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [adminPanelOpen, setAdminPanelOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState<'home' | 'admin'>('home');
   const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
   const { adminMode, setAdminMode } = useAppStore();
-
-  const toggleAdminPanel = () => {
-    if (!adminMode) {
-      setAdminMode(true);
-    }
-    setAdminPanelOpen(!adminPanelOpen);
-  };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -48,7 +41,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               </button>
               <button 
                 className={`text-gray-500 hover:text-indigo-600 transition-colors p-1 rounded-full ${adminMode ? 'bg-indigo-100' : ''}`}
-                onClick={toggleAdminPanel}
+                onClick={() => {
+                  if (!adminMode) {
+                    setAdminMode(true);
+                  }
+                  setCurrentPage('admin');
+                }}
                 title="Admin Settings"
               >
                 <Settings className="h-5 w-5" />
@@ -62,9 +60,10 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       </header>
       
       <main className="flex-1 relative">
-        {children}
-        
-        {adminPanelOpen && <AdminPanel onClose={() => setAdminPanelOpen(false)} />}
+        {currentPage === 'admin' ? 
+          <AdminPage onBack={() => setCurrentPage('home')} /> : 
+          children
+        }
         <WelcomeModal isOpen={welcomeModalOpen} onClose={() => setWelcomeModalOpen(false)} />
       </main>
       
