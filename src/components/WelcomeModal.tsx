@@ -175,26 +175,26 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
         
         <div className="flex border-b border-gray-200 overflow-x-auto">
           <button
-            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${currentTab === 'features' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-gray-900'}`}
+            className={`px-4 py-2 font-medium text-sm whitespace-nowrap min-w-max ${currentTab === 'features' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-gray-900'}`}
             onClick={() => setCurrentTab('features')}
           >
             Features
           </button>
           <button
-            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${currentTab === 'analytics' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-gray-900'}`}
+            className={`px-4 py-2 font-medium text-sm whitespace-nowrap min-w-max ${currentTab === 'analytics' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-gray-900'}`}
             onClick={() => setCurrentTab('analytics')}
           >
             Analytics
           </button>
           <button
-            className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${currentTab === 'comparison' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-gray-900'}`}
+            className={`px-4 py-2 font-medium text-sm whitespace-nowrap min-w-max ${currentTab === 'comparison' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-gray-900'}`}
             onClick={() => setCurrentTab('comparison')}
           >
             Provider Comparison
           </button>
           {adminMode && (
             <button
-              className={`px-4 py-2 font-medium text-sm whitespace-nowrap ${currentTab === 'admin' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-gray-900'}`}
+              className={`px-4 py-2 font-medium text-sm whitespace-nowrap min-w-max ${currentTab === 'admin' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-gray-900'}`}
               onClick={() => setCurrentTab('admin')}
             >
               Admin Features
